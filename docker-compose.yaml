@@ -5,9 +5,9 @@ services:
       context: bitcoin
       dockerfile: data.dockerfile
       additional_contexts:
-        - bitcoin-data=${BITCOIN_DATA_FOLDER:-bitcoin/state/bitcoin}
+        - bitcoin-data=${DATA_FOLDER}/bitcoin
     volumes:
-      - bitcoin-data:/data
+      - ${DATA_FOLDER}/bitcoin:/data/bitcoin
     profiles:
       - data
   bitcoin:
@@ -17,32 +17,34 @@ services:
       context: bitcoin
       dockerfile: dockerfile
     volumes:
-      - bitcoin-data:/data
-    ports:
-      - 8333:8333/tcp
+      - ${DATA_FOLDER}/bitcoin:/data/bitcoin
+    # ports:
+    #   - 8333:8333/tcp
   argon-miner:
     image: ghcr.io/argonprotocol/argon-miner:latest
     command: 
-      # - --bitcoin-rpc-url='http://bitcoin:bitcoin@bitcoin:8332'
-      - --bitcoin-rpc-url='http://bitcoin:dmq&HL3Uixr4fuXw@argon.gate:8332'
+      - --bitcoin-rpc-url=http://bitcoin:bitcoin@bitcoin:5000
       - --no-mdns
       - --port=30333
-      - --sync=full
+      - --sync=warp
       - --network-backend=libp2p
       - --validator
-      - --notebook-archive-hosts='https://notebook-archives.argon.network'
+      - --notebook-archive-hosts=https://notebook-archives.argon.network
       - --chain=mainnet
       - --detailed-log-output
       - --name=argon-miner
       - --state-pruning=256
       - -linfo,pallet=trace,argon=trace,txpool=trace
-      # - --node-key-file=/argon/argon-mainnet_p2p_key
+      - --node-key-file=/data/p2p.key
+      - --unsafe-force-node-key-generation
       - --compute-author=5Dts3Cjxb6MphAD9ZP3Q4woaoCeyH9uaGTSHvqDruPPHjtRg
+    volumes:
+      - ${DATA_FOLDER}/argon:/data
     ports:
      - 30333:30333
+  test:
+    image: debian:latest
 
-volumes:
-  bitcoin-data:
 
 # # START_ARGS="\
 #   --base-path /home/argon/.local/share/argon-node \

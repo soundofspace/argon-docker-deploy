@@ -30,9 +30,9 @@ COPY <<-EOF copy.sh
 
 	cd /data
 
-	if test -d ./bitcoin; then
+	if [ $(ls -A /data/bitcoin | wc -l) -ne 0 ]; then
 		cd -
-		echo "Bitcoin directory already exists not copying data"
+		echo "Bitcoin directory already has data skipping"
 		exit 0
 	fi
 

@@ -6,9 +6,9 @@ RUN <<END
     set -ex
     apt-get update
     apt-get install -y wget
-    wget https://bitcoin.org/bin/bitcoin-core-27.0/bitcoin-27.0-x86_64-linux-gnu.tar.gz
-    tar xzf bitcoin-27.0-x86_64-linux-gnu.tar.gz
-    install -m 0755 -o root -g root -t /usr/local/bin bitcoin-27.0/bin/*
+    wget https://bitcoincore.org/bin/bitcoin-core-28.0/bitcoin-28.0-x86_64-linux-gnu.tar.gz
+    tar xzf bitcoin-28.0-x86_64-linux-gnu.tar.gz
+    install -m 0755 -o root -g root -t /usr/local/bin bitcoin-28.0/bin/*
 END
 
 COPY ./bitcoin.conf /etc/bitcoin/bitcoin.conf
