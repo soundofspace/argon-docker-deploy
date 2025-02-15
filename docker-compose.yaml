@@ -1,0 +1,69 @@
+services:
+  bitcoin-data:
+    image: ghcr.io/soundofspace/argon-docker-deploy/bitcoin-data:latest
+    build: 
+      context: bitcoin
+      dockerfile: data.dockerfile
+      args:
+        BITCOIN_DATA_FOLDER: ${BITCOIN_DATA_FOLDER:-state/bitcoin}
+    volumes:
+      - bitcoin-data:/data
+    profiles:
+      - data
+  bitcoin:
+    image: ghcr.io/soundofspace/argon-docker-deploy/bitcoin:latest
+    platform: linux/amd64
+    build: 
+      context: bitcoin
+      dockerfile: dockerfile
+    volumes:
+      - bitcoin-data:/data
+    ports:
+      - 8333:8333/tcp
+  argon-miner:
+    image: ghcr.io/argonprotocol/argon-miner:latest
+    command: 
+      # - --bitcoin-rpc-url='http://bitcoin:bitcoin@bitcoin:8332'
+      - --bitcoin-rpc-url='http://bitcoin:dmq&HL3Uixr4fuXw@argon.gate:8332'
+      - --no-mdns
+      - --port=30333
+      - --sync=full
+      - --network-backend=libp2p
+      - --validator
+      - --notebook-archive-hosts='https://notebook-archives.argon.network'
+      - --chain=mainnet
+      - --detailed-log-output
+      - --name=argon-miner
+      - --state-pruning=256
+      - -linfo,pallet=trace,argon=trace,txpool=trace
+      # - --node-key-file=/argon/argon-mainnet_p2p_key
+      - --compute-author=5Dts3Cjxb6MphAD9ZP3Q4woaoCeyH9uaGTSHvqDruPPHjtRg
+    ports:
+     - 30333:30333
+
+volumes:
+  bitcoin-data:
+
+# # START_ARGS="\
+#   --base-path /home/argon/.local/share/argon-node \
+#   --prometheus-port 9615 \
+#   --bitcoin-rpc-url 'http://bitcoin:dmq&HL3Uixr4fuXw@argon.gate:8332' \
+#   --no-mdns \
+#   --port 30333 \
+#   --sync full \
+#   --network-backend libp2p \
+#   --compute-flags large-pages \
+#     --validator \
+#         --notebook-archive-hosts https://notebook-archives.argon.network \
+#       --chain mainnet \
+#       --detailed-log-output \
+#       --name miner_node_1 \
+#     --node-key-file /home/argon/keys/argon-mainnet_p2p_key \
+#     --public-addr=/ip4/87.66.134.91/tcp/30333 \
+#               --no-telemetry \
+#         --state-pruning=256 \
+#       -linfo,pallet=trace,argon=trace,txpool=trace \
+#       --compute-miners 20 \
+#       --compute-author 5Dts3Cjxb6MphAD9ZP3Q4woaoCeyH9uaGTSHvqDruPPHjtRg \
+#       --experimental-rpc-endpoint \"listen-addr=127.0.0.1:9940,methods=unsafe\" \
+#     "
