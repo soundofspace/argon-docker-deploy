@@ -3,7 +3,7 @@
 FROM debian AS data
 ARG BITCOIN_DATA_FOLDER
 
-RUN --mount=type=bind,source=${BITCOIN_DATA_FOLDER},target=/bitcoin \
+RUN --mount=type=bind,from=bitcoin-data,source=/,target=/bitcoin \
 	mkdir /data && \
 	tar cvf - bitcoin/blocks bitcoin/chainstate bitcoin/indexes | split --bytes=5GB - /data/bitcoin.tar.
 

@@ -4,8 +4,8 @@ services:
     build: 
       context: bitcoin
       dockerfile: data.dockerfile
-      args:
-        BITCOIN_DATA_FOLDER: ${BITCOIN_DATA_FOLDER:-state/bitcoin}
+      additional_contexts:
+        - bitcoin-data=${BITCOIN_DATA_FOLDER:-bitcoin/state/bitcoin}
     volumes:
       - bitcoin-data:/data
     profiles:
